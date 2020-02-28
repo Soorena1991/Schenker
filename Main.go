@@ -1,15 +1,17 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "golang.org/x/crypto/ssh/terminal"
-    "syscall"
-    "crypto/cipher"
-    "crypto/aes"
-    "golang.org/x/crypto/sha3"
-    "database/sql"
-    _ "github.com/go-sql-driver/mysql"
+  "time"
+  "fmt"
+  "log"
+	"bytes"
+  "golang.org/x/crypto/ssh/terminal"
+  "syscall"
+  "crypto/cipher"
+  "crypto/aes"
+  "golang.org/x/crypto/sha3"
+  "database/sql"
+  _ "github.com/go-sql-driver/mysql"
 )
 
 func hash(data []byte) []byte {
@@ -17,14 +19,29 @@ func hash(data []byte) []byte {
   return hashArray[:]
 }
 
+func decrypt(data, pass []byte) []byte {
+	aesBlock, _ := aes.NewCipher(hash(pass))
+	gcm, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	nonce, cipherText := data[:gcm.NonceSize()], data[gcm.NonceSize():]
+	plainText, err := gcm.Open(nil, nonce, cipherText, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	return plainText
+}
+
 func main() {
 // we ask for the code here.
     fmt.Print("Enter the code: ")
     byteCode, err := terminal.ReadPassword(int(syscall.Stdin))
     if err == nil {
-        fmt.Println(byteCode)
+        fmt.Println("\n" + string(byteCode))
     } else {
-        fmt.Println("codoo kiri shod")
+        fmt.Println("\ncodoo kiri shod")
     }
 // we open a connection to our DB here to retrieve the data in the next step.
     db, err := sql.Open("mysql","Schenker:schenker@tcp(127.0.0.1:3306)/Schenker")
@@ -55,17 +72,17 @@ func main() {
     }
     rows.Close()
 // we decrypt the encryptedOrder to plainOrder here.
-	aesBlock, _ := aes.NewCipher(hash(append([]byte("Schenker"), byteCode...)))
-	gcm, err := cipher.NewGCM(aesBlock)
-	if err != nil {
-		panic(err.Error())
-	}
-	nonce := make([]byte, gcm.NonceSize())
-	nonce, ciphertext := []byte(encryptedOrder)[:gcm.NonceSize()], []byte(encryptedOrder)[gcm.NonceSize():]
-	plainOrder, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
+	plainOrder := decrypt([]byte(encryptedOrder), append([]byte("Schenker"), byteCode...))
 // we read the plainOrder and execute it here.
-	
+	orderSlice := bytes.Split(plainOrder, []byte{'$'})
+	if len(orderSlice) % 2 == 1 {
+		fmt.Println("orderoo kirie")
+	}
+	for i := 0; i < len(orderSlice); i += 2 {
+		if bytes.Equal(orderSlice[i], []byte{'S', 'H', 'O', 'W'}) {
+			fmt.Println(string(orderSlice[i+1]))
+		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
+      time.Sleep(time.Millisecond)
+    }
+  }
 }
