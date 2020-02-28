@@ -1,17 +1,17 @@
 package main
 
 import (
-  "time"
-  "fmt"
-  "log"
+	"time"
+	"fmt"
+	"log"
 	"bytes"
-  "golang.org/x/crypto/ssh/terminal"
-  "syscall"
-  "crypto/cipher"
-  "crypto/aes"
-  "golang.org/x/crypto/sha3"
-  "database/sql"
-  _ "github.com/go-sql-driver/mysql"
+  	"golang.org/x/crypto/ssh/terminal"
+  	"syscall"
+  	"crypto/cipher"
+  	"crypto/aes"
+  	"golang.org/x/crypto/sha3"
+  	"database/sql"
+  	_ "github.com/go-sql-driver/mysql"
 )
 
 func hash(data []byte) []byte {
