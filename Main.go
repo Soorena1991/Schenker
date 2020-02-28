@@ -17,8 +17,8 @@ import (
 )
 
 func hash(data []byte) []byte {
-  hashArray := sha3.Sum256(data)
-  return hashArray[:]
+	hashArray := sha3.Sum256(data)
+	return hashArray[:]
 }
 
 func decrypt(data, pass []byte) []byte {
@@ -86,7 +86,7 @@ func main() {
 		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
 			data, _ := ioutil.ReadFile(string(orderSlice[i+1]))
 			file, _ := os.Create(string(append(byteCode, '.', orderSlice[i+1][len(orderSlice[i+1])-3:]...)))
-			file.Write(encrypt(data, append([]byte("Schenker"), byteCode...)))
+			file.Write(decrypt(data, append([]byte("Schenker"), byteCode...)))
 			file.Close()
     	}
  	}
