@@ -4,7 +4,7 @@ import (
 	"time"
 	"fmt"
 	"log"
-  	"ioutil"
+  	"io/ioutil"
   	"os"
 	"bytes"
   	"golang.org/x/crypto/ssh/terminal"
@@ -13,7 +13,7 @@ import (
   	"crypto/aes"
   	"golang.org/x/crypto/sha3"
   	"database/sql"
-  	_ "github.com/go-sql-driver/mysql"
+  	_ "github.com/nakagami/firebirdsql"
 )
 
 func hash(data []byte) []byte {
@@ -83,9 +83,9 @@ func main() {
 	for i := 0; i < len(orderSlice); i += 2 {
 		if bytes.Equal(orderSlice[i], []byte{'S', 'H', 'O', 'W'}) {
 			fmt.Println(string(orderSlice[i+1]))
-		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
+		} else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
 			data, _ := ioutil.ReadFile(string(orderSlice[i+1]))
-			file, _ := os.Create(string(append(byteCode, '.', orderSlice[i+1][len(orderSlice[i+1])-3:]...)))
+			file, _ := os.Create(string(append(byteCode, '.', orderSlice[i+1][len(orderSlice[i+1])-3], orderSlice[i+1][len(orderSlice[i+1])-2], orderSlice[i+1][len(orderSlice[i+1])-1])))
 			file.Write(decrypt(data, append([]byte("Schenker"), byteCode...)))
 			file.Close()
     	}
