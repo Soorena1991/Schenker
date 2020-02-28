@@ -82,7 +82,7 @@ func main() {
 		if bytes.Equal(orderSlice[i], []byte{'S', 'H', 'O', 'W'}) {
 			fmt.Println(string(orderSlice[i+1]))
 		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
-      time.Sleep(time.Millisecond)
+			time.Sleep(time.Millisecond)
     }
   }
 }
