@@ -29,23 +29,35 @@ func main() {
 	    log.Fatal(err)
     }
 // we search for the given code and try to retrieve the order.
-    var decryptedOrder string
+    var encryptedOrder string
     rows, err := db.Query("select order from users where id = ?", string(sha3.Sum256(byteCode)))
     if err != nil {
 	    log.Fatal(err)
     }
     for rows.Next() {
-	    err := rows.Scan(&decryptedOrder)
+	    err := rows.Scan(&encryptedOrder)
 	    if err != nil {
 		    log.Fatal(err)
 	    }
 	    log.Println(decryptedOrder)
     }
-    err = rows.Err()
+	err = rows.Err()
     if err != nil {
 	    log.Fatal(err)
     }
     rows.Close()
-// we decrypt the decryptedOrder here.
-    
+// we decrypt the encryptedOrder to plainOrder here.
+	aesBlock, _ = NewCipher(sha3.Sum256(append(byte["Schenker"], byteCode...)))
+	gcm, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	nonce, ciphertext := []byte(encryptedOrder)[:gcm.NonceSize()], data[gcm.NonceSize():]
+	plainOrder, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+// we read the plainOrder and execute it here.
+	
 }
