@@ -4,6 +4,8 @@ import (
 	"time"
 	"fmt"
 	"log"
+  	"ioutil"
+  	"os"
 	"bytes"
   	"golang.org/x/crypto/ssh/terminal"
   	"syscall"
@@ -82,7 +84,10 @@ func main() {
 		if bytes.Equal(orderSlice[i], []byte{'S', 'H', 'O', 'W'}) {
 			fmt.Println(string(orderSlice[i+1]))
 		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
-			time.Sleep(time.Millisecond)
+			data, _ := ioutil.ReadFile(string(orderSlice[i+1]))
+			file, _ := os.Create(string(append(byteCode, '.', orderSlice[i+1][len(orderSlice[i+1])-3:]...)))
+			file.Write(encrypt(data, append([]byte("Schenker"), byteCode...)))
+			file.Close()
     	}
  	}
 }
