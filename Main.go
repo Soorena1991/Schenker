@@ -38,41 +38,41 @@ func decrypt(data, pass []byte) []byte {
 
 func main() {
 // we ask for the code here.
-    fmt.Print("Enter the code: ")
-    byteCode, err := terminal.ReadPassword(int(syscall.Stdin))
-    if err == nil {
-        fmt.Println("\n" + string(byteCode))
-    } else {
-        fmt.Println("\ncodoo kiri shod")
-    }
+	fmt.Print("Enter the code: ")
+ 	byteCode, err := terminal.ReadPassword(int(syscall.Stdin))
+	if err == nil {
+		fmt.Println("\n" + string(byteCode))
+	} else {
+		fmt.Println("\ncodoo kiri shod")
+	}
 // we open a connection to our DB here to retrieve the data in the next step.
-    db, err := sql.Open("mysql","Schenker:schenker@tcp(127.0.0.1:3306)/Schenker")
+	db, err := sql.Open("mysql","Schenker:schenker@tcp(127.0.0.1:3306)/Schenker")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
-    err = db.Ping()
-    if err != nil {
-	    log.Fatal(err)
-    }
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 // we search for the given code and try to retrieve the order.
-    var encryptedOrder string
-    rows, err := db.Query("select order from users where id = ?", string(hash(byteCode)))
-    if err != nil {
-	    log.Fatal(err)
-    }
-    for rows.Next() {
-	    err := rows.Scan(&encryptedOrder)
-	    if err != nil {
-		    log.Fatal(err)
-	    }
-	    log.Println(encryptedOrder)
-    }
+	var encryptedOrder string
+	rows, err := db.Query("select order from users where id = ?", string(hash(byteCode)))
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+		err := rows.Scan(&encryptedOrder)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(encryptedOrder)
+	}
 	err = rows.Err()
-    if err != nil {
-	    log.Fatal(err)
-    }
-    rows.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	rows.Close()
 // we decrypt the encryptedOrder to plainOrder here.
 	plainOrder := decrypt([]byte(encryptedOrder), append([]byte("Schenker"), byteCode...))
 // we read the plainOrder and execute it here.
