@@ -83,6 +83,6 @@ func main() {
 			fmt.Println(string(orderSlice[i+1]))
 		}else if bytes.Equal(orderSlice[i], []byte{'F', 'I', 'L', 'E'}) {
 			time.Sleep(time.Millisecond)
-    }
-  }
+    	}
+ 	}
 }
